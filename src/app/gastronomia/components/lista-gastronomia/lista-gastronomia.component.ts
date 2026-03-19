@@ -50,31 +50,8 @@ export class ListaGastronomiaComponent implements OnInit {
   private fetchEstablecimientos() {
     this.loading = true;
     this.error = null;
-    this.gastronomiaService.getRanking().pipe(first()).subscribe({
-      next: (ranking: RankingGastronomiaDto[]) => {
-        if ((ranking || []).length > 0) {
-          this.rankingMode = true;
-          this.establecimientos = (ranking || []).map(d => ({
-            id: d.id!,
-            nombre: d.nombre,
-            ubicacion: d.ubicacion,
-            descripcion: d.descripcion,
-            imagen: d.fotoPrincipal || 'assets/images/hero-oferentes.svg',
-            ratingPromedio: Number(d.promedio || 0),
-            totalReviews: Number(d.totalResenas || 0)
-          }));
-          this.loading = false;
-          return;
-        }
 
-        this.fetchNormalList();
-      },
-      error: () => this.fetchNormalList()
-    });
-  }
-
-  private fetchNormalList() {
-    this.rankingMode = false;
+    // 1. Carga la lista base inmediatamente → el usuario ve las tarjetas rápido
     this.gastronomiaService.listAll().pipe(first()).subscribe({
       next: (data: EstablecimientoDto[]) => {
         this.establecimientos = (data || []).map(d => ({
@@ -86,16 +63,40 @@ export class ListaGastronomiaComponent implements OnInit {
           ratingPromedio: 0,
           totalReviews: 0
         }));
-        if (this.establecimientos.length === 0) {
-          this.loading = false;
-          return;
-        }
-        this.loadRatingsResumen();
+        this.loading = false; // Mostrar contenido YA, sin esperar ratings
+
+        // 2. Enriquecer con ranking en background (no bloquea el render)
+        this.loadRankingAsync();
       },
       error: () => {
         this.establecimientos = [];
-        this.error = 'No se pudieron cargar los restaurantes reales';
+        this.error = 'No se pudieron cargar los restaurantes';
         this.loading = false;
+      }
+    });
+  }
+
+  private loadRankingAsync() {
+    this.gastronomiaService.getRanking().pipe(first()).subscribe({
+      next: (ranking: RankingGastronomiaDto[]) => {
+        if (!(ranking || []).length) return;
+        this.rankingMode = true;
+        const rankMap = new Map(ranking.map(r => [r.id!, r]));
+        this.establecimientos = this.establecimientos.map(e => {
+          const r = rankMap.get(e.id);
+          return r
+            ? { ...e, ratingPromedio: Number(r.promedio || 0), totalReviews: Number(r.totalResenas || 0) }
+            : e;
+        });
+        // Reordenar según el ranking recibido
+        const order = ranking.map(r => r.id!);
+        this.establecimientos.sort(
+          (a, b) => order.indexOf(a.id) - order.indexOf(b.id)
+        );
+      },
+      error: () => {
+        // Si ranking falla, cargar reseñas individuales como fallback
+        if (this.establecimientos.length) this.loadRatingsResumen();
       }
     });
   }
