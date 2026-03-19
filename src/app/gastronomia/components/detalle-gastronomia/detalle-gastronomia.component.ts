@@ -93,10 +93,12 @@ export class DetalleGastronomiaComponent implements OnInit {
     this.loadingReviews = true;
     this.gastronomiaService.getReviews(id).pipe(first()).subscribe({
       next: (data) => {
+        console.log('Reviews loaded:', data);
         this.reviews = data || [];
         this.loadingReviews = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('Reviews error:', err);
         this.reviews = [];
         this.loadingReviews = false;
       }

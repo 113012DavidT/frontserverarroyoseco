@@ -20,17 +20,28 @@ export class AnalyticsGastronomiaComponent implements OnInit {
   ngOnInit(): void {
     this.gastronomiaService.getAnalytics().pipe(first()).subscribe({
       next: (res) => {
-        this.data = {
-          totalResenas: Number(res?.totalResenas || 0),
-          promedio: Number(res?.promedio || 0),
-          distribucionEstrellas: res?.distribucionEstrellas || [],
-          top5: res?.top5 || [],
-          bottom5: res?.bottom5 || [],
-          tendenciaMensual: res?.tendenciaMensual || []
-        };
+        console.log('Analytics response:', res);
+        
+        // Si el servicio ya desempaquetó correctamente, uso directamente
+        if (res && typeof res === 'object') {
+          this.data = res as GastronomiaAnalyticsDto;
+          console.log('Analytics data assigned:', this.data);
+        } else {
+          // Fallback si viene vacío
+          this.data = {
+            totalResenas: 0,
+            promedio: 0,
+            distribucionEstrellas: [],
+            top5: [],
+            bottom5: [],
+            tendenciaMensual: []
+          };
+        }
+        
         this.loading = false;
       },
       error: (err) => {
+        console.error('Analytics error:', err);
         this.error = err?.error?.message || 'No se pudo cargar la analitica';
         this.loading = false;
       }
