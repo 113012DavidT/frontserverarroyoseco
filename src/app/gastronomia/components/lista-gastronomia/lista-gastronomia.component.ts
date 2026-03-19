@@ -86,18 +86,15 @@ export class ListaGastronomiaComponent implements OnInit {
           ratingPromedio: 0,
           totalReviews: 0
         }));
-        // Si no hay datos del backend, usar datos estáticos de demostración
         if (this.establecimientos.length === 0) {
-          this.establecimientos = this.getStaticEstablecimientos();
           this.loading = false;
           return;
         }
         this.loadRatingsResumen();
       },
       error: () => {
-        // Fallback a datos estáticos cuando el backend no está disponible
-        this.establecimientos = this.getStaticEstablecimientos();
-        this.error = null;
+        this.establecimientos = [];
+        this.error = 'No se pudieron cargar los restaurantes reales';
         this.loading = false;
       }
     });
@@ -141,83 +138,6 @@ export class ListaGastronomiaComponent implements OnInit {
         this.loading = false;
       }
     });
-  }
-
-  private getStaticEstablecimientos(): Establecimiento[] {
-    return [
-      {
-        id: 1,
-        nombre: 'Restaurante El Mirador',
-        ubicacion: 'Centro de Arroyo Seco',
-        descripcion: 'Cocina tradicional queretana con vista panorámica al valle. Especialidad en carnes asadas y enchiladas serranas.',
-        imagen: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop',
-        ratingPromedio: 4.8,
-        totalReviews: 39
-      },
-      {
-        id: 2,
-        nombre: 'Fonda Doña María',
-        ubicacion: 'Plaza Principal, Arroyo Seco',
-        descripcion: 'Comida casera de la Sierra Gorda. Famosa por sus gorditas, tamales y atole de nuez.',
-        imagen: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop',
-        ratingPromedio: 4.6,
-        totalReviews: 22
-      },
-      {
-        id: 3,
-        nombre: 'La Trucha Feliz',
-        ubicacion: 'Camino al Río Escanela',
-        descripcion: 'Especialidad en trucha fresca del río, preparada al estilo serrano. Ambiente rústico junto al agua.',
-        imagen: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop',
-        ratingPromedio: 4.9,
-        totalReviews: 51
-      },
-      {
-        id: 4,
-        nombre: 'Café Sierra Gorda',
-        ubicacion: 'Calle Hidalgo 12, Arroyo Seco',
-        descripcion: 'Café de altura cultivado localmente. Postres artesanales, pan de elote y dulces regionales.',
-        imagen: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&h=400&fit=crop',
-        ratingPromedio: 4.5,
-        totalReviews: 28
-      },
-      {
-        id: 5,
-        nombre: 'Asador Los Nogales',
-        ubicacion: 'Carretera Jalpan-Arroyo Seco',
-        descripcion: 'Carnes asadas al carbón, costillas BBQ y cortes premium. Ambiente familiar con área de juegos.',
-        imagen: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop',
-        ratingPromedio: 4.7,
-        totalReviews: 33
-      },
-      {
-        id: 6,
-        nombre: 'Antojitos El Portal',
-        ubicacion: 'Portal del Centro, Arroyo Seco',
-        descripcion: 'Los mejores antojitos mexicanos: quesadillas, sopes, tlacoyos y aguas frescas naturales.',
-        imagen: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&h=400&fit=crop',
-        ratingPromedio: 4.4,
-        totalReviews: 19
-      },
-      {
-        id: 7,
-        nombre: 'Restaurante Agua Viva',
-        ubicacion: 'Zona de Cascadas',
-        descripcion: 'Cocina fusión con ingredientes locales. Platillos gourmet inspirados en la biodiversidad de la sierra.',
-        imagen: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=400&fit=crop',
-        ratingPromedio: 5.0,
-        totalReviews: 14
-      },
-      {
-        id: 8,
-        nombre: 'Mezcalería La Joya',
-        ubicacion: 'Calle Morelos, Arroyo Seco',
-        descripcion: 'Mezcales artesanales de la región, botanas tradicionales y música en vivo los fines de semana.',
-        imagen: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=600&h=400&fit=crop',
-        ratingPromedio: 4.6,
-        totalReviews: 25
-      }
-    ];
   }
 
   get filtered(): Establecimiento[] {
