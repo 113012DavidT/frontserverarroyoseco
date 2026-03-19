@@ -1,6 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
+
+interface ApiEnvelope<T> {
+  data?: T;
+}
 
 // ===== Interfaces =====
 export interface EstablecimientoDto {
@@ -112,41 +116,74 @@ export interface GastronomiaAnalyticsDto {
 export class GastronomiaService {
   private readonly api = inject(ApiService);
 
+  private unwrapItem<T>(response: T | ApiEnvelope<T> | null | undefined): T | null {
+    if (response && typeof response === 'object' && 'data' in response) {
+      return (response as ApiEnvelope<T>).data ?? null;
+    }
+
+    return (response as T) ?? null;
+  }
+
+  private unwrapArray<T>(response: T[] | ApiEnvelope<T[]> | null | undefined): T[] {
+    return this.unwrapItem<T[]>(response) ?? [];
+  }
+
   // ===== Públicos (sin autenticación) =====
   
   /** Listar todos los establecimientos */
   listAll(): Observable<EstablecimientoDto[]> {
-    return this.api.get<EstablecimientoDto[]>('/Gastronomias');
+    return this.api
+      .get<EstablecimientoDto[] | ApiEnvelope<EstablecimientoDto[]>>('/Gastronomias')
+      .pipe(map((response) => this.unwrapArray(response)));
   }
 
   /** Ranking de restaurantes (orden del backend) */
   getRanking(): Observable<RankingGastronomiaDto[]> {
-    return this.api.get<RankingGastronomiaDto[]>('/Gastronomias/ranking');
+    return this.api
+      .get<RankingGastronomiaDto[] | ApiEnvelope<RankingGastronomiaDto[]>>('/Gastronomias/ranking')
+      .pipe(map((response) => this.unwrapArray(response)));
   }
 
   /** Analitica de restaurantes del oferente autenticado */
   getAnalytics(): Observable<GastronomiaAnalyticsDto> {
-    return this.api.get<GastronomiaAnalyticsDto>('/Gastronomias/analytics');
+    return this.api
+      .get<GastronomiaAnalyticsDto | ApiEnvelope<GastronomiaAnalyticsDto>>('/Gastronomias/analytics')
+      .pipe(map((response) => this.unwrapItem(response) ?? {
+        totalResenas: 0,
+        promedio: 0,
+        distribucionEstrellas: [],
+        top5: [],
+        bottom5: [],
+        tendenciaMensual: []
+      }));
   }
 
   /** Detalle de un establecimiento */
   getById(id: number): Observable<EstablecimientoDto> {
-    return this.api.get<EstablecimientoDto>(`/Gastronomias/${id}`);
+    return this.api
+      .get<EstablecimientoDto | ApiEnvelope<EstablecimientoDto>>(`/Gastronomias/${id}`)
+      .pipe(map((response) => this.unwrapItem(response) as EstablecimientoDto));
   }
 
   /** Listar menús de un establecimiento */
   getMenus(id: number): Observable<MenuDto[]> {
-    return this.api.get<MenuDto[]>(`/Gastronomias/${id}/menus`);
+    return this.api
+      .get<MenuDto[] | ApiEnvelope<MenuDto[]>>(`/Gastronomias/${id}/menus`)
+      .pipe(map((response) => this.unwrapArray(response)));
   }
 
   /** Verificar disponibilidad en una fecha */
   getDisponibilidad(id: number, fecha: string): Observable<DisponibilidadDto> {
-    return this.api.get<DisponibilidadDto>(`/Gastronomias/${id}/disponibilidad`, { fecha });
+    return this.api
+      .get<DisponibilidadDto | ApiEnvelope<DisponibilidadDto>>(`/Gastronomias/${id}/disponibilidad`, { fecha })
+      .pipe(map((response) => this.unwrapItem(response) as DisponibilidadDto));
   }
 
   /** Listar reseñas de un establecimiento */
   getReviews(id: number): Observable<ReviewGastronomiaDto[]> {
-    return this.api.get<ReviewGastronomiaDto[]>(`/Gastronomias/${id}/reviews`);
+    return this.api
+      .get<ReviewGastronomiaDto[] | ApiEnvelope<ReviewGastronomiaDto[]>>(`/Gastronomias/${id}/reviews`)
+      .pipe(map((response) => this.unwrapArray(response)));
   }
 
   /** Crear reseña de un establecimiento */
@@ -188,12 +225,16 @@ export class GastronomiaService {
 
   /** Listar reservas del establecimiento */
   getReservas(establecimientoId: number): Observable<ReservaGastronomiaDto[]> {
-    return this.api.get<ReservaGastronomiaDto[]>(`/Gastronomias/${establecimientoId}/reservas`);
+    return this.api
+      .get<ReservaGastronomiaDto[] | ApiEnvelope<ReservaGastronomiaDto[]>>(`/Gastronomias/${establecimientoId}/reservas`)
+      .pipe(map((response) => this.unwrapArray(response)));
   }
 
   /** Listar establecimientos propios del oferente */
   listMine(): Observable<EstablecimientoDto[]> {
-    return this.api.get<EstablecimientoDto[]>('/Gastronomias/mios');
+    return this.api
+      .get<EstablecimientoDto[] | ApiEnvelope<EstablecimientoDto[]>>('/Gastronomias/mios')
+      .pipe(map((response) => this.unwrapArray(response)));
   }
 
   /** Actualizar establecimiento */

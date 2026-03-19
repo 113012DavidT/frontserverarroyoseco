@@ -23,7 +23,24 @@ export class CambiarPasswordForzadoComponent {
   passwordActual = '';
   passwordNueva = '';
   passwordConfirmacion = '';
+  mostrarPasswordActual = false;
+  mostrarPasswordNueva = false;
+  mostrarPasswordConfirmacion = false;
   submitting = false;
+
+  togglePasswordVisibility(field: 'actual' | 'nueva' | 'confirmacion') {
+    if (field === 'actual') {
+      this.mostrarPasswordActual = !this.mostrarPasswordActual;
+      return;
+    }
+
+    if (field === 'nueva') {
+      this.mostrarPasswordNueva = !this.mostrarPasswordNueva;
+      return;
+    }
+
+    this.mostrarPasswordConfirmacion = !this.mostrarPasswordConfirmacion;
+  }
 
   cambiarPassword(form: NgForm) {
     if (form.invalid) {

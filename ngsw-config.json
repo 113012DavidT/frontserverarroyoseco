@@ -44,10 +44,21 @@
       }
     },
     {
+      "name": "api-reviews-fresh",
+      "urls": [
+        "http://34.58.123.99:8080/api/Gastronomias/*/reviews"
+      ],
+      "cacheConfig": {
+        "maxSize": 100,
+        "maxAge": "30s",
+        "timeout": "5s",
+        "strategy": "freshness"
+      }
+    },
+    {
       "name": "api-performance",
       "urls": [
         "http://34.58.123.99:8080/api/Gastronomias/*/menus",
-        "http://34.58.123.99:8080/api/Gastronomias/*/reviews",
         "http://34.58.123.99:8080/api/Gastronomias/*/disponibilidad"
       ],
       "cacheConfig": {
