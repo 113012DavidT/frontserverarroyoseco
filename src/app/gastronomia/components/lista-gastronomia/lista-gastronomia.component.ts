@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../../shared/services/toast.service';
-import { GastronomiaService, EstablecimientoDto } from '../../services/gastronomia.service';
+import { GastronomiaService, EstablecimientoDto, RankingGastronomiaDto } from '../../services/gastronomia.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { first } from 'rxjs/operators';
 import { catchError, forkJoin, map, of } from 'rxjs';
@@ -28,6 +28,7 @@ interface Establecimiento {
 export class ListaGastronomiaComponent implements OnInit {
   search = '';
   sortMode: 'nombre' | 'ubicacion' = 'nombre';
+  rankingMode = false;
   establecimientos: Establecimiento[] = [];
   loading = false;
   error: string | null = null;
@@ -49,6 +50,31 @@ export class ListaGastronomiaComponent implements OnInit {
   private fetchEstablecimientos() {
     this.loading = true;
     this.error = null;
+    this.gastronomiaService.getRanking().pipe(first()).subscribe({
+      next: (ranking: RankingGastronomiaDto[]) => {
+        if ((ranking || []).length > 0) {
+          this.rankingMode = true;
+          this.establecimientos = (ranking || []).map(d => ({
+            id: d.id!,
+            nombre: d.nombre,
+            ubicacion: d.ubicacion,
+            descripcion: d.descripcion,
+            imagen: d.fotoPrincipal || 'assets/images/hero-oferentes.svg',
+            ratingPromedio: Number(d.promedio || 0),
+            totalReviews: Number(d.totalResenas || 0)
+          }));
+          this.loading = false;
+          return;
+        }
+
+        this.fetchNormalList();
+      },
+      error: () => this.fetchNormalList()
+    });
+  }
+
+  private fetchNormalList() {
+    this.rankingMode = false;
     this.gastronomiaService.listAll().pipe(first()).subscribe({
       next: (data: EstablecimientoDto[]) => {
         this.establecimientos = (data || []).map(d => ({
@@ -200,6 +226,12 @@ export class ListaGastronomiaComponent implements OnInit {
       e.nombre.toLowerCase().includes(this.search.toLowerCase()) ||
       e.ubicacion.toLowerCase().includes(this.search.toLowerCase())
     );
+
+    if (this.rankingMode) {
+      // Importante: conservar el orden entregado por /ranking
+      return result;
+    }
+
     switch (this.sortMode) {
       case 'nombre':
         result = [...result].sort((a, b) => a.nombre.localeCompare(b.nombre));

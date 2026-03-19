@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface ModuleType {
   title: string;
@@ -17,8 +18,29 @@ interface ModuleType {
   templateUrl: './oferente-home-selector.component.html',
   styleUrl: './oferente-home-selector.component.scss'
 })
-export class OferenteHomeSelectorComponent {
-  constructor(private router: Router) {}
+export class OferenteHomeSelectorComponent implements OnInit {
+  hideSelector = false;
+
+  constructor(
+    private router: Router,
+    private auth: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    const tipo = this.auth.getTipoNegocio();
+
+    if (tipo === 1) {
+      this.hideSelector = true;
+      this.router.navigate(['/oferente/dashboard']);
+      return;
+    }
+
+    if (tipo === 2) {
+      this.hideSelector = true;
+      this.router.navigate(['/oferente/gastronomia/dashboard']);
+      return;
+    }
+  }
 
   readonly modules: ModuleType[] = [
     {

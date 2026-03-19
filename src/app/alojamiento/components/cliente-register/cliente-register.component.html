@@ -34,6 +34,43 @@
 
         <form #f="ngForm" (ngSubmit)="submit(f)" class="register-form">
           <div class="input-group">
+            <label for="direccion">Direccion</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+              <input
+                id="direccion"
+                type="text"
+                name="direccion"
+                [(ngModel)]="model.direccion"
+                placeholder="Calle, colonia, municipio"
+                required
+                #direccion="ngModel"
+              />
+            </div>
+            <small class="field-error" *ngIf="direccion.invalid && (direccion.dirty || direccion.touched)">La direccion es obligatoria</small>
+          </div>
+
+          <div class="input-group">
+            <label for="sexo">Sexo</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24"><path d="M13 3a5 5 0 1 0 2 9.58V15h-3v2h3v3h2v-3h3v-2h-3v-2.42A5 5 0 0 0 13 3z"/></svg>
+              <select
+                id="sexo"
+                name="sexo"
+                [(ngModel)]="model.sexo"
+                required
+                #sexo="ngModel"
+              >
+                <option value="" disabled>Selecciona una opcion</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="No especifica">No especifica</option>
+              </select>
+            </div>
+            <small class="field-error" *ngIf="sexo.invalid && (sexo.dirty || sexo.touched)">Selecciona una opcion</small>
+          </div>
+
+          <div class="input-group">
             <label for="email">Correo Electrónico</label>
             <div class="input-wrapper">
               <svg class="input-icon" viewBox="0 0 24 24">

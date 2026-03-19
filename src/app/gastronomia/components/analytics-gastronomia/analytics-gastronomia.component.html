@@ -1,0 +1,59 @@
+<section class="analytics">
+  <div *ngIf="loading" class="state">Cargando analitica...</div>
+  <div *ngIf="error" class="state state--error">{{ error }}</div>
+
+  <ng-container *ngIf="!loading && !error && data">
+    <div class="metrics-grid">
+      <article class="metric-card">
+        <h3>Total reseñas</h3>
+        <strong>{{ data.totalResenas }}</strong>
+      </article>
+      <article class="metric-card">
+        <h3>Promedio</h3>
+        <strong>{{ data.promedio | number:'1.1-2' }}</strong>
+      </article>
+    </div>
+
+    <div class="cards-grid">
+      <article class="card">
+        <h3>Distribucion por estrellas</h3>
+        <ul>
+          <li *ngFor="let item of data.distribucionEstrellas; trackBy: trackByLabel">
+            <span>{{ item.etiqueta }}</span>
+            <strong>{{ item.valor }}</strong>
+          </li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h3>Top 5</h3>
+        <ul>
+          <li *ngFor="let item of data.top5">
+            <span>{{ item.nombre }}</span>
+            <strong>{{ (item.promedio || 0) | number:'1.1-2' }}</strong>
+          </li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h3>Bottom 5</h3>
+        <ul>
+          <li *ngFor="let item of data.bottom5">
+            <span>{{ item.nombre }}</span>
+            <strong>{{ (item.promedio || 0) | number:'1.1-2' }}</strong>
+          </li>
+        </ul>
+      </article>
+
+      <article class="card card--trend">
+        <h3>Tendencia mensual</h3>
+        <ul>
+          <li *ngFor="let item of data.tendenciaMensual; trackBy: trackByLabel">
+            <span>{{ item.etiqueta }}</span>
+            <strong>{{ item.valor }}</strong>
+          </li>
+        </ul>
+      </article>
+    </div>
+  </ng-container>
+</section>

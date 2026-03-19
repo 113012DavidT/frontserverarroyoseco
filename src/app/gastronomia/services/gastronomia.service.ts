@@ -82,6 +82,32 @@ export interface CrearReviewGastronomiaDto {
   comentario: string;
 }
 
+export interface RankingGastronomiaDto extends EstablecimientoDto {
+  promedio?: number;
+  totalResenas?: number;
+  scoreNeurona?: number;
+}
+
+export interface AnalyticsBucketDto {
+  etiqueta: string;
+  valor: number;
+}
+
+export interface AnalyticsTopBottomDto {
+  nombre: string;
+  promedio?: number;
+  totalResenas?: number;
+}
+
+export interface GastronomiaAnalyticsDto {
+  totalResenas: number;
+  promedio: number;
+  distribucionEstrellas: AnalyticsBucketDto[];
+  top5: AnalyticsTopBottomDto[];
+  bottom5: AnalyticsTopBottomDto[];
+  tendenciaMensual: AnalyticsBucketDto[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class GastronomiaService {
   private readonly api = inject(ApiService);
@@ -91,6 +117,16 @@ export class GastronomiaService {
   /** Listar todos los establecimientos */
   listAll(): Observable<EstablecimientoDto[]> {
     return this.api.get<EstablecimientoDto[]>('/Gastronomias');
+  }
+
+  /** Ranking de restaurantes (orden del backend) */
+  getRanking(): Observable<RankingGastronomiaDto[]> {
+    return this.api.get<RankingGastronomiaDto[]>('/Gastronomias/ranking');
+  }
+
+  /** Analitica de restaurantes del oferente autenticado */
+  getAnalytics(): Observable<GastronomiaAnalyticsDto> {
+    return this.api.get<GastronomiaAnalyticsDto>('/Gastronomias/analytics');
   }
 
   /** Detalle de un establecimiento */

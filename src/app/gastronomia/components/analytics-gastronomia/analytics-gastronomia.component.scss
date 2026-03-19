@@ -1,0 +1,93 @@
+.analytics {
+  display: grid;
+  gap: 1rem;
+}
+
+.state {
+  padding: 1rem;
+  border-radius: 10px;
+  background: #f9fafb;
+  color: #374151;
+}
+
+.state--error {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.metric-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.metric-card h3 {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.metric-card strong {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 1.7rem;
+  color: #111827;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.card--trend {
+  grid-column: 1 / -1;
+}
+
+.card h3 {
+  margin: 0 0 0.7rem;
+  color: #111827;
+}
+
+.card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.card li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 0.35rem;
+}
+
+.card li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.card li span {
+  color: #4b5563;
+}
+
+.card li strong {
+  color: #111827;
+}

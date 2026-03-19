@@ -24,6 +24,7 @@ export class OferenteLoginComponent {
     password: ''
   };
   isLoading = false;
+  showPassword = false;
 
   constructor(
     private router: Router, 
@@ -47,8 +48,14 @@ export class OferenteLoginComponent {
         if (roles.some(r => /admin/i.test(r))) {
           this.router.navigate(['/admin/home']);
         } else if (roles.some(r => /oferente/i.test(r))) {
-          // Siempre redirigir al selector de módulos para oferentes
-          this.router.navigate(['/oferente/home']);
+          const tipo = this.auth.getTipoNegocio();
+          if (tipo === 1) {
+            this.router.navigate(['/oferente/dashboard']);
+          } else if (tipo === 2) {
+            this.router.navigate(['/oferente/gastronomia/dashboard']);
+          } else {
+            this.router.navigate(['/oferente/home']);
+          }
         } else {
           this.router.navigate(['/cliente/home']);
         }

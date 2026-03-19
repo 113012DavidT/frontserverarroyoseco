@@ -114,6 +114,36 @@
   background: #fff;
 }
 
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 2.8rem;
+}
+
+.toggle-pass {
+  position: absolute;
+  right: 0.65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+}
+
+.toggle-pass svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
 .form-card button[type='submit'] {
   display: inline-flex;
   align-items: center;

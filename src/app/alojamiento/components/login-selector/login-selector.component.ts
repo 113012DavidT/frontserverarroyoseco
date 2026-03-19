@@ -54,7 +54,18 @@ export class LoginSelectorComponent implements OnInit {
           }
           this.redirectByRole();
         },
-        error: () => {
+        error: (err) => {
+          if (err?.status === 428 && err?.error?.requiereCompletarPerfil === true) {
+            if (err?.error?.token) {
+              this.auth.setToken(err.error.token);
+            }
+            this.auth.savePendingLogin(this.model.email, this.model.password);
+            this.loading = false;
+            this.toast.info('Debes completar tu perfil antes de continuar');
+            this.router.navigate(['/completar-perfil']);
+            return;
+          }
+
           this.toast.show('Credenciales inválidas', 'error');
           this.loading = false;
         }
@@ -66,7 +77,15 @@ export class LoginSelectorComponent implements OnInit {
     if (roles.some(r => /admin/i.test(r))) {
       this.router.navigate(['/admin/home']);
     } else if (roles.some(r => /oferente/i.test(r))) {
-      this.router.navigate(['/oferente/home']);
+      const tipo = this.auth.getTipoNegocio();
+      if (tipo === 1) {
+        this.router.navigate(['/oferente/dashboard']);
+      } else if (tipo === 2) {
+        this.router.navigate(['/oferente/gastronomia/dashboard']);
+      } else {
+        // Tipo 3 (Ambos) o sin claim: mostrar selector de módulos
+        this.router.navigate(['/oferente/home']);
+      }
     } else {
       this.router.navigate(['/cliente/home']);
     }

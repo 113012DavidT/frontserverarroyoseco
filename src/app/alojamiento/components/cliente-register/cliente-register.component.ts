@@ -14,7 +14,7 @@ import { first } from 'rxjs/operators';
   styleUrls: ['./cliente-register.component.scss']
 })
 export class ClienteRegisterComponent {
-  model = { email: '', password: '', confirm: '' };
+  model = { email: '', password: '', confirm: '', direccion: '', sexo: '' };
   loading = false;
   showPassword = false;
   showConfirm = false;
@@ -38,7 +38,21 @@ export class ClienteRegisterComponent {
     }
     this.loading = true;
     // El backend asigna rol CLIENTE por defecto; no enviamos role
-    this.auth.register({ email: this.model.email, password: this.model.password }).pipe(first()).subscribe({
+    if (!this.model.direccion.trim()) {
+      this.toast.show('La direccion es obligatoria', 'error');
+      return;
+    }
+    if (!this.model.sexo) {
+      this.toast.show('El sexo es obligatorio', 'error');
+      return;
+    }
+
+    this.auth.register({
+      email: this.model.email,
+      password: this.model.password,
+      direccion: this.model.direccion.trim(),
+      sexo: this.model.sexo
+    }).pipe(first()).subscribe({
       next: () => {
         this.toast.show('Registro exitoso. Inicia sesión.', 'success');
         this.loading = false;

@@ -10,7 +10,14 @@ export interface LoginPayload {
 export interface RegisterPayload {
   email: string;
   password: string;
+  direccion: string;
+  sexo: string;
   role?: string;
+}
+
+export interface CompletarPerfilPayload {
+  direccion: string;
+  sexo: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -18,11 +25,16 @@ export class AuthService {
   private readonly api = inject(ApiService);
 
   private readonly tokenKey = 'as_token';
+  private readonly pendingLoginKey = 'as_pending_login';
 
   constructor() { }
 
   private saveToken(token: string) {
     localStorage.setItem(this.tokenKey, token);
+  }
+
+  setToken(token: string) {
+    this.saveToken(token);
   }
 
   getToken(): string | null {
@@ -59,6 +71,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem(this.tokenKey);
+    sessionStorage.removeItem(this.pendingLoginKey);
   }
 
   // --- Roles & user info helpers from JWT ---
@@ -139,6 +152,30 @@ export class AuthService {
 
   register(payload: RegisterPayload): Observable<any> {
     return this.api.post<any>('/auth/register', payload);
+  }
+
+  completarPerfil(payload: CompletarPerfilPayload): Observable<any> {
+    return this.api.put<any>('/auth/perfil', payload);
+  }
+
+  savePendingLogin(email: string, password: string): void {
+    sessionStorage.setItem(this.pendingLoginKey, JSON.stringify({ email, password }));
+  }
+
+  getPendingLogin(): { email: string; password: string } | null {
+    try {
+      const raw = sessionStorage.getItem(this.pendingLoginKey);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed?.email || !parsed?.password) return null;
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+
+  clearPendingLogin(): void {
+    sessionStorage.removeItem(this.pendingLoginKey);
   }
 
   me(): Observable<any> {

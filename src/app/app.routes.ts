@@ -27,6 +27,7 @@ import { HomeSelectorComponent } from './shared/components/home-selector/home-se
 import { AdminHomeSelectorComponent } from './shared/components/admin-home-selector/admin-home-selector.component';
 import { OferenteHomeSelectorComponent } from './shared/components/oferente-home-selector/oferente-home-selector.component';
 import { PublicLayoutComponent } from './shared/components/public-layout/public-layout.component';
+import { CompletarPerfilComponent } from './shared/components/completar-perfil/completar-perfil.component';
 // Gastronomía imports
 import { ClienteLayoutGastronomiaComponent } from './gastronomia/components/cliente-layout-gastronomia/cliente-layout-gastronomia.component';
 import { ListaGastronomiaComponent } from './gastronomia/components/lista-gastronomia/lista-gastronomia.component';
@@ -38,6 +39,7 @@ import { GestionEstablecimientosComponent } from './gastronomia/components/gesti
 import { FormEstablecimientoComponent } from './gastronomia/components/form-establecimiento/form-establecimiento.component';
 import { DetalleEstablecimientoOferenteComponent } from './gastronomia/components/detalle-establecimiento-oferente/detalle-establecimiento-oferente.component';
 import { OferenteReservasGastronomiaComponent } from './gastronomia/components/oferente-reservas-gastronomia/oferente-reservas-gastronomia.component';
+import { AnalyticsGastronomiaComponent } from './gastronomia/components/analytics-gastronomia/analytics-gastronomia.component';
 import { AdminDashboardGastronomiaComponent } from './alojamiento/components/admin-dashboard-gastronomia/admin-dashboard-gastronomia.component';
 import { AdminOferentesGastronomiaComponent } from './alojamiento/components/admin-oferentes-gastronomia/admin-oferentes-gastronomia.component';
 import { AdminSolicitudesComponent } from './alojamiento/components/admin-solicitudes/admin-solicitudes.component';
@@ -49,6 +51,7 @@ import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginSelectorComponent },
+  { path: 'completar-perfil', component: CompletarPerfilComponent },
   { path: 'cambiar-password', component: CambiarPasswordForzadoComponent },
   
   // Rutas públicas - sin autenticación
@@ -467,6 +470,15 @@ export const routes: Routes = [
         data: {
           heroTitle: 'Gestión de Reservas',
           heroImage: 'assets/images/hero-notificaciones.svg'
+        }
+      },
+      {
+        path: 'analytics',
+        component: AnalyticsGastronomiaComponent,
+        data: {
+          heroTitle: 'Analítica de tu Restaurante',
+          heroSubtitle: 'Métricas clave y desempeño mensual.',
+          heroImage: 'assets/images/hero-dashboard.svg'
         }
       },
       {
