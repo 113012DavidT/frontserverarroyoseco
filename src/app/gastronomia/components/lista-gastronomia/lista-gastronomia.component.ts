@@ -6,7 +6,7 @@ import { ToastService } from '../../../shared/services/toast.service';
 import { GastronomiaService, EstablecimientoDto, RankingGastronomiaDto } from '../../services/gastronomia.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { first } from 'rxjs/operators';
-import { catchError, forkJoin, map, of } from 'rxjs';
+import { catchError, forkJoin, map, of, from, mergeMap } from 'rxjs';
 
 interface Establecimiento {
   id: number;
@@ -101,43 +101,49 @@ export class ListaGastronomiaComponent implements OnInit {
   }
 
   private loadRatingsResumen() {
-    const requests = this.establecimientos.map((e) =>
-      this.gastronomiaService.getReviews(e.id).pipe(
-        map((reviews) => {
-          const total = (reviews || []).length;
-          const suma = (reviews || []).reduce((acc, r) => acc + (Number(r.puntuacion) || 0), 0);
-          return {
-            id: e.id,
-            ratingPromedio: total ? suma / total : 0,
-            totalReviews: total
-          };
-        }),
-        catchError(() => of({ id: e.id, ratingPromedio: 0, totalReviews: 0 }))
-      )
-    );
-
-    if (!requests.length) {
+    if (!this.establecimientos.length) {
       this.loading = false;
       return;
     }
 
-    forkJoin(requests).pipe(first()).subscribe({
-      next: (resumenes) => {
-        const mapa = new Map(resumenes.map((r) => [r.id, r]));
-        this.establecimientos = this.establecimientos.map((e) => {
-          const review = mapa.get(e.id);
-          return {
-            ...e,
-            ratingPromedio: review?.ratingPromedio || 0,
-            totalReviews: review?.totalReviews || 0
-          };
-        });
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-      }
-    });
+    // Cargar ratings en paralelo (máximo 3 simultáneas) para velocidad sin sobrecargar
+    const mapa = new Map<number, { ratingPromedio: number; totalReviews: number }>();
+    
+    from(this.establecimientos)
+      .pipe(
+        mergeMap(
+          (e) =>
+            this.gastronomiaService.getReviews(e.id).pipe(
+              map((reviews) => {
+                const total = (reviews || []).length;
+                const suma = (reviews || []).reduce((acc, r) => acc + (Number(r.puntuacion) || 0), 0);
+                return {
+                  id: e.id,
+                  ratingPromedio: total ? suma / total : 0,
+                  totalReviews: total
+                };
+              }),
+              catchError(() => of({ id: e.id, ratingPromedio: 0, totalReviews: 0 }))
+            ),
+          3 // Máximo 3 solicitudes simultáneas
+        )
+      )
+      .subscribe({
+        next: (result) => {
+          mapa.set(result.id, { ratingPromedio: result.ratingPromedio, totalReviews: result.totalReviews });
+          // Actualizar en vivo a medida que llegan resultados
+          this.establecimientos = this.establecimientos.map((e) => {
+            const review = mapa.get(e.id);
+            return review ? { ...e, ratingPromedio: review.ratingPromedio, totalReviews: review.totalReviews } : e;
+          });
+        },
+        error: () => {
+          this.loading = false;
+        },
+        complete: () => {
+          this.loading = false;
+        }
+      });
   }
 
   get filtered(): Establecimiento[] {
