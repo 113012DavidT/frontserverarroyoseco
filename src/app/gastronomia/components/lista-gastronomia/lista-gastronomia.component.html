@@ -49,7 +49,9 @@
 	<section class="grid">
 		<article class="card" *ngFor="let e of filtered" (click)="navigateToDetail(e.id)">
 			<div class="card-image-wrapper">
-				<div class="card-image" [style.background-image]="'url(' + e.imagen + ')'">
+					<div class="card-image">
+						<img [src]="e.imagen" loading="lazy" [alt]="e.nombre" class="card-img"
+						     onerror="this.src='assets/images/hero-login.svg'" />
 					<span class="card-badge">Restaurante</span>
 					<span class="card-rating" *ngIf="e.totalReviews > 0">
 						★ {{ e.ratingPromedio | number:'1.1-1' }}
