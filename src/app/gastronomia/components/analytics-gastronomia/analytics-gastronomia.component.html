@@ -7,12 +7,10 @@
     <!-- KPIs -->
     <div class="metrics-grid">
       <article class="metric-card">
-        <span class="metric-icon">📝</span>
         <h3>Total reseñas</h3>
         <strong>{{ data.totalResenas }}</strong>
       </article>
       <article class="metric-card">
-        <span class="metric-icon">⭐</span>
         <h3>Promedio</h3>
         <strong>{{ data.promedio | number:'1.1-2' }}</strong>
       </article>
@@ -34,7 +32,7 @@
     <!-- Top / Bottom -->
     <div class="cards-grid">
       <article class="card">
-        <h3>🏆 Top 5</h3>
+        <h3>Top 5</h3>
         <ul>
           <li *ngFor="let item of data.top5; let i = index">
             <span class="rank">{{ i + 1 }}</span>
@@ -45,7 +43,7 @@
       </article>
 
       <article class="card">
-        <h3>📉 Bottom 5</h3>
+        <h3>Bottom 5</h3>
         <ul>
           <li *ngFor="let item of data.bottom5; let i = index">
             <span class="rank">{{ i + 1 }}</span>
